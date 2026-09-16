@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pomodoro Timer</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
+
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #2f2b29;
+  }
+
+  .timer {
+    width: 190px;
+    height: 190px;
+    border: 1.5px solid #92877a;
+    border-radius: 50%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    margin-bottom: 11px;
+  }
+
+  .divider {
+    width: 25px;
+    height: 1px;
+    background: #92877a;
+    margin-bottom: 10px;
+  }
+
+  .time {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 37px;
+    font-weight: 400;
+    line-height: 1;
+    margin-bottom: 13px;
+  }
+
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  button {
+    border: none;
+    background: transparent;
+    padding: 2px;
+    cursor: pointer;
+    color: #746b62;
+  }
+
+  button:hover {
+    opacity: 0.55;
+  }
+
+  .play-icon {
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 11px solid #746b62;
+  }
+
+  .pause-icon {
+    width: 11px;
+    height: 14px;
+    position: relative;
+  }
+
+  .pause-icon::before,
+  .pause-icon::after {
+    content: "";
+    position: absolute;
+    width: 2px;
+    height: 14px;
+    background: #746b62;
+  }
+
+  .pause-icon::before {
+    left: 2px;
+  }
+
+  .pause-icon::after {
+    right: 2px;
+  }
+
+  .reset {
+    font-family: Arial, sans-serif;
+    font-size: 22px;
+    line-height: 1;
+    transform: rotate(-15deg);
+  }
+</style>
+</head>
+
+<body>
+
+<div class="timer">
+
+  <div class="label">FOCUS</div>
+
+  <div class="divider"></div>
+
+  <div class="time" id="time">25:00</div>
+
+  <div class="controls">
+
+    <button id="playButton" aria-label="Start timer">
+      <div class="play-icon" id="playIcon"></div>
+    </button>
+
+    <button class="reset" id="resetButton" aria-label="Reset timer">
+      ↻
+    </button>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const TOTAL_TIME = 25 * 60;
+
+let timeLeft = TOTAL_TIME;
+let timer = null;
+let running = false;
+
+const timeDisplay = document.getElementById("time");
+const playButton = document.getElementById("playButton");
+const playIcon = document.getElementById("playIcon");
+const resetButton = document.getElementById("resetButton");
+
+
+function displayTime() {
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+
+  timeDisplay.textContent =
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0");
+
+}
+
+
+function startTimer() {
+
+  if (running) {
+
+    clearInterval(timer);
+    running = false;
+
+    playIcon.className = "play-icon";
+    playButton.setAttribute("aria-label", "Start timer");
+
+    return;
+  }
+
+  running = true;
+
+  playIcon.className = "pause-icon";
+  playButton.setAttribute("aria-label", "Pause timer");
+
+  timer = setInterval(() => {
+
+    if (timeLeft > 0) {
+
+      timeLeft--;
+      displayTime();
+
+    } else {
+
+      clearInterval(timer);
+      running = false;
+
+      playIcon.className = "play-icon";
+
+    }
+
+  }, 1000);
+
+}
+
+
+function resetTimer() {
+
+  clearInterval(timer);
+
+  running = false;
+  timeLeft = TOTAL_TIME;
+
+  displayTime();
+
+  playIcon.className = "play-icon";
+  playButton.setAttribute("aria-label", "Start timer");
+
+}
+
+
+playButton.addEventListener("click", startTimer);
+resetButton.addEventListener("click", resetTimer);
+
+displayTime();
+
+</script>
+
+</body>
+</html>
